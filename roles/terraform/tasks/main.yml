@@ -1,0 +1,26 @@
+- name: brew Install tfenv, pre-commit, git-secrets.
+  community.general.homebrew:
+    name: tfenv,pre-commit,git-secrets
+    state: latest
+    update_homebrew: true
+
+- name: Install terraform and use.
+  ansible.builtin.shell: tfenv install {{ terraform_tag }} && tfenv use {{ terraform_tag }}
+
+- name: Write the IaC Compliance Tools command to the .bash_aliases file.
+  ansible.builtin.blockinfile:
+    path: "{{ [ansible_user_dir, '.bash_aliases'] | path_join }}"
+    create: yes
+    backup: yes
+    marker: "# {mark} {{ item.name }}. Written by Ansible."
+    block: "{{ item.block }}"
+  loop:
+    - name: IaC Compliance Tools
+      block: |
+        alias tflint='docker run --rm -v $PWD:/data -t ghcr.io/terraform-linters/tflint:{{ tflint_tag }}'
+        alias checkov='docker run --rm -v $PWD:/data -w /data -t bridgecrew/checkov:{{ checkov_tag }}'
+        alias trivy='docker run --rm -v $PWD:/data aquasec/trivy:{{ trivy_tag }}'
+    - name: Git pre-commit Tools
+      block: |
+        alias pre-commit='docker run -e "USERID=$(id -u):$(id -g)" -v $PWD:/lint -w /lint ghcr.io/antonbabenko/pre-commit-terraform:{{ pre_commmit_tag }}'
+        alias terraform-docs='docker run --rm -v "$PWD:/terraform-docs" -u $(id -u) quay.io/terraform-docs/terraform-docs:{{ terraform_docs_tag }} markdown /terraform-docs'

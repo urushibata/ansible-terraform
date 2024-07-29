@@ -1,0 +1,49 @@
+- name: Start Pre_Tasks
+  debug:
+    msg: pre_tasksが開始しました。
+
+- name: Update and upgrade all packages to the latest version
+  become: yes
+  apt:
+    update_cache: yes
+    autoremove: true
+    clean: true
+    upgrade: yes
+    state: latest
+
+- name: Install required packages
+  become: yes
+  apt:
+    pkg:
+      - build-essential
+      - gcc
+      - procps
+      - curl
+      - file
+      - git
+
+- name: Install Homebrew
+  become: no
+  shell: |
+    expect -c '
+    spawn /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    expect "ENTER"
+    send "\r"
+    expect "password"
+    send "{{ ansible_sudo_pass }}\r"
+    expect eof
+    '
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+- name: ~/.bashrcにbrewパスを追加
+  become: no
+  lineinfile:
+    path: "{{ [ansible_user_dir, '.bashrc'] | path_join }}"
+    state: present
+    regexp: "^eval .+linuxbrew.+"
+    line: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
+    backup: yes
+
+- name: Finished Pre_Tasks
+  debug:
+    msg: pre_tasksが完了しました。

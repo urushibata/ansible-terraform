@@ -1,0 +1,8 @@
+LATEST: "latest"
+
+terraform_tag: "{{ LATEST }}"
+tflint_tag: "{{ LATEST }}"
+checkov_tag: "{{ LATEST }}"
+trivy_tag: "{{ LATEST }}"
+pre_commmit_tag: "{{ LATEST }}"
+terraform_docs_tag: "{{ LATEST }}"

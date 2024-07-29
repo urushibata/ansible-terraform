@@ -1,0 +1,17 @@
+- hosts: local
+#  pre_tasks:
+#    - name: Import pre tasks
+#      import_tasks: pre_tasks.yml
+
+  roles:
+#    - role: docker
+    - role: terraform
+      vars:
+        terraform_tag: 1.9.2
+    - role: cue
+      vars:
+        cuelang_tag: 0.9.2
+
+  post_tasks:
+    - name: Import post tasks
+      import_tasks: post_tasks.yml

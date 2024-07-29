@@ -1,0 +1,46 @@
+- block:
+  - name: Install required packages
+    apt:
+      pkg:
+        - ca-certificates
+        - curl
+
+  - name: Create directory for Docker's GPG key
+    file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
+
+  - name: Add docker gpg key
+    get_url:
+      url: https://download.docker.com/linux/debian/gpg
+      dest: /etc/apt/keyrings/docker.asc
+      force: true
+
+  - name: Add docker apt repository
+    apt_repository:
+      repo:
+        deb [arch={{ deb_architecture[ansible_architecture] }} signed-by=/etc/apt/keyrings/docker.asc]
+        https://download.docker.com/{{ ansible_system | lower }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+      state: present
+
+  - name: Update all packages to the latest version
+    apt:
+      update_cache: yes
+
+  - name: Install Docker
+    apt:
+      pkg:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-buildx-plugin
+        - docker-compose-plugin
+
+  - name: Add docker group
+    user:
+      name: "{{ ansible_user_id }}"
+      append: yes
+      groups: docker
+
+  become: yes
