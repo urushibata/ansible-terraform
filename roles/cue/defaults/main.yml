@@ -1,3 +1,4 @@
 LATEST: "latest"
 
-cuelang_tag : "{{ LATEST }}"
+cuelang_tag: "{{ LATEST }}"
+golang_tag: "{{ LATEST }}"

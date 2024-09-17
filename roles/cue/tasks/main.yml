@@ -1,11 +1,17 @@
-- name: Write the cuelang command to the .bash_aliases file.
+- name: brew Install goenv.
+  community.general.homebrew:
+    name: goenv
+    state: latest
+    update_homebrew: true
+
+- name: Install go lang and use.
+  ansible.builtin.shell: goenv install -s {{ golang_tag }} && goenv global {{ golang_tag }}
+
+- name: Write the goenv command to the .bash_rc file.
   ansible.builtin.blockinfile:
-    path: "{{ [ansible_user_dir, '.bash_aliases'] | path_join }}"
-    create: yes
-    backup: yes
-    marker: "# {mark} {{ item.name }}. Written by Ansible."
-    block: "{{ item.block }}"
-  loop:
-    - name: cuelang
-      block: |
-        alias cue='docker run --rm cuelang/cue:{{ cuelang_tag }}'
+    path: "{{ [ansible_user_dir, '.bashrc'] | path_join }}"
+    marker: "# {mark} goenv. Written by Ansible."
+    block: eval "$(goenv init -)"
+
+- name: Install cue lang.
+  ansible.builtin.shell: eval "$(goenv init -)" && go install cuelang.org/go/cmd/cue@{{ cuelang_tag }}
