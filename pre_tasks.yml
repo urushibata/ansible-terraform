@@ -3,16 +3,16 @@
     msg: pre_tasksが開始しました。
 
 - name: Update and upgrade all packages to the latest version
-  become: yes
+  become: true
   apt:
-    update_cache: yes
+    update_cache: true
     autoremove: true
     clean: true
-    upgrade: yes
+    upgrade: true
     state: latest
 
 - name: Install required packages
-  become: yes
+  become: true
   apt:
     pkg:
       - build-essential
@@ -21,9 +21,11 @@
       - curl
       - file
       - git
+      - ansible-lint
+      - unzip
 
 - name: Install Homebrew
-  become: no
+  become: false
   shell: |
     expect -c '
     spawn /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -36,13 +38,13 @@
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 - name: ~/.bashrcにbrewパスを追加
-  become: no
+  become: false
   lineinfile:
     path: "{{ [ansible_user_dir, '.bashrc'] | path_join }}"
     state: present
     regexp: "^eval .+linuxbrew.+"
     line: 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"'
-    backup: yes
+    backup: true
 
 - name: Finished Pre_Tasks
   debug:

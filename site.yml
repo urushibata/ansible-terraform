@@ -1,22 +1,21 @@
-- hosts: local
+- name: SetUp WSL. [Ubuntu]
+  hosts: local
   pre_tasks:
     - name: Import pre tasks
-      import_tasks: pre_tasks.yml
+      ansible.builtin.import_tasks: pre_tasks.yml
 
   roles:
     - role: docker
     - role: terraform
       vars:
-        terraform_tag: 1.9.2
-        tflint_tag: v0.52.0
-        checkov_tag: 3.2.218
-        trivy_tag: 0.54.1
-        pre_commmit_tag: v1.92.1
-        terraform_docs_tag: 0.18.0
+        terraform_tag: 1.11.1
+        tflint_tag: v0.55.1
+        trivy_tag: v0.60.0
+        terraform_docs_tag: v0.18.0
     - role: cue
       vars:
-        cuelang_tag: v0.9.2
+        cuelang_tag: v0.12.0
 
   post_tasks:
     - name: Import post tasks
-      import_tasks: post_tasks.yml
+      ansible.builtin.import_tasks: post_tasks.yml

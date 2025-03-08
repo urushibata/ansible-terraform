@@ -1,11 +1,15 @@
-- name: brew Install goenv.
+- name: Brew Install goenv.
   community.general.homebrew:
     name: goenv
     state: latest
     update_homebrew: true
 
 - name: Install go lang and use.
-  ansible.builtin.shell: goenv install -s {{ golang_tag }} && goenv global {{ golang_tag }}
+  ansible.builtin.shell:
+    cmd: |
+      eval "$(goenv init -)" && \
+      goenv install -s {{ golang_tag }} && \
+      goenv global {{ golang_tag }}
 
 - name: Write the goenv command to the .bash_rc file.
   ansible.builtin.blockinfile:
@@ -14,4 +18,6 @@
     block: eval "$(goenv init -)"
 
 - name: Install cue lang.
-  ansible.builtin.shell: eval "$(goenv init -)" && go install cuelang.org/go/cmd/cue@{{ cuelang_tag }}
+  ansible.builtin.shell: |
+    eval "$(goenv init -)" && \
+    go install cuelang.org/go/cmd/cue@{{ cuelang_tag }}
